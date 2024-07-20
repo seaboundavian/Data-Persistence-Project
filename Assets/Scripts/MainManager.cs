@@ -1,8 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Windows;
+using Random = UnityEngine.Random;
+using System.IO;
+using UnityEngine.Serialization;
+using File = System.IO.File;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,6 +17,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,7 +25,7 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +43,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        HighScoreText.text = "Best Score : " + ScoreManager.Instance.highest_M_Points;
     }
 
     private void Update()
@@ -57,7 +65,7 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(0);
             }
         }
     }
@@ -65,6 +73,12 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
+        if (ScoreManager.Instance.highest_M_Points < m_Points)
+        {
+            ScoreManager.Instance.highest_M_Points = m_Points;
+            HighScoreText.text = "Best Score : " + ScoreManager.Instance.highest_M_Points;
+            ScoreManager.Instance.SaveScore();
+        }
         ScoreText.text = $"Score : {m_Points}";
     }
 
@@ -73,4 +87,8 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    
+    
+    
 }
